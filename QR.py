@@ -4,7 +4,12 @@ from math import copysign, hypot
 import numpy as np
 import pprint
 
-X = np.matrix([[12, -51, 4], [6, 167, -68], [-4, 24, -41]])
+X = [[8, 9, 8, 8], 
+    [6, 5, 6, 6], 
+    [6, 7, 6, 9], 
+    [6, 8, 7, 10], 
+    [6, 8, 5, 10]
+]
 
 """
 
@@ -102,7 +107,7 @@ def givensRotation(X):
             R = np.dot(G, R)
             Q = np.dot(Q, G.T)
 
-    return (Q, R)
+    return (np.matrix(Q), np.matrix(R))
 
 def givensEntries(a, b):
     r = hypot(a, b)
@@ -130,18 +135,18 @@ class NMF:
         self.shape = self.X.shape
 
 
-    def compute(self, p = 10, q = 10, iterations = 10):
+    def compute(self, p = 3, q = 2, iterations = 10):
         l = self.rank + p
-        O = np.random.rand(self.shape[0], l)
+        O = np.random.rand(self.shape[1], l)
         Y = self.X * O
 
         for i in range(q):
             Q, _ = QR(Y)
             Q, _ = QR(self.X.T * Q)
-            Y = X * Q
+            Y = self.X * Q
 
         Q, _ = QR(Y)
-        B = Q.T * X
+        B = Q.T * self.X
 
         W, WT, H = np.random.rand(self.shape[0], self.rank), np.random.rand(l, self.rank), np.random.rand(self.rank, self.shape[1])
 
@@ -168,8 +173,8 @@ class NMF:
 
             if frobenius(self.X, W * H) <= 100:
                 break
-            
+                
         return (W, H)
 
-nmf = NMF(X, 3)
+nmf = NMF(X, 2)
 print(nmf.compute())
