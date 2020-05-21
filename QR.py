@@ -149,6 +149,7 @@ class NMF:
         B = Q.T * self.X
 
         W, WT, H = np.random.rand(self.shape[0], self.rank), np.random.rand(l, self.rank), np.random.rand(self.rank, self.shape[1])
+        W, WT, H = np.matrix(W), np.matrix(WT), np.matrix(H)
 
         while iterations:
             iterations -= 1
@@ -157,7 +158,13 @@ class NMF:
             S = WT.T * WT
 
             for j in range(self.rank):
-                H[j] = H[j] + (R[:, j] - H.T * S[:, j]) / S[j, j]
+                row = (R[:, j] - H.T * S[:, j]) / S[j, j]
+                flatten = []
+                for i in row:
+                    flatten.append(i[0, 0])
+
+                flatten = np.matrix(flatten)
+                H[j, :] = H[j, :] + flatten
                 for idx in range(len(H[j])):
                     H[j, idx] = max(0, H[j, idx])
 
@@ -166,8 +173,11 @@ class NMF:
 
             for j in range(self.rank):
                 WT[:, j] = WT[:, j] + (T[:, j] - WT * V[:, j]) / V[j, j]
+                
+                delta = (Q * W[:, j])
                 for idx in range(len(W)):
-                    W[idx, j] = max(0, Q * W[idx, j])
+                    W[idx, j] = max(0, delta[idx, 0])
+
                 WT[:, j] = Q.T * W[:, j]
 
 
