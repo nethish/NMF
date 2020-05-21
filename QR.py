@@ -130,14 +130,19 @@ def QR(X, algo = 1):
 # NMF model
 class NMF:
     def __init__(self, X, _rank):
+        # X is of shape m x n
         self.X = np.matrix(X)
         self.rank = _rank
         self.shape = self.X.shape
 
-
-    def compute(self, p = 3, q = 2, iterations = 10):
+    def compute(self, p = 3, q = 2, iterations = 10, error = 100):
+        # Slight oversampling
         l = self.rank + p
+        
+        # Generate sampling matrix of shape n x l
         O = np.random.rand(self.shape[1], l)
+        
+        # Form basis of shape m x l
         Y = self.X * O
 
         for i in range(q):
@@ -145,18 +150,21 @@ class NMF:
             Q, _ = QR(self.X.T * Q)
             Y = self.X * Q
 
+        # Form orthogonal basis m x l
         Q, _ = QR(Y)
         B = Q.T * self.X
 
         W, WT, H = np.random.rand(self.shape[0], self.rank), np.random.rand(l, self.rank), np.random.rand(self.rank, self.shape[1])
         W, WT, H = np.matrix(W), np.matrix(WT), np.matrix(H)
 
+        # Higher the iterations higher the accuracy
         while iterations:
             iterations -= 1
 
             R = B.T * WT
             S = WT.T * WT
 
+            # Update H row by row
             for j in range(self.rank):
                 row = (R[:, j] - H.T * S[:, j]) / S[j, j]
                 flatten = []
@@ -165,12 +173,15 @@ class NMF:
 
                 flatten = np.matrix(flatten)
                 H[j, :] = H[j, :] + flatten
+
+                # Element wise maximum to avoid small negative values
                 for idx in range(len(H[j])):
                     H[j, idx] = max(0, H[j, idx])
 
             T = B * H.T
             V = H * H.T
 
+            # Update W column wise
             for j in range(self.rank):
                 WT[:, j] = WT[:, j] + (T[:, j] - WT * V[:, j]) / V[j, j]
                 
@@ -178,10 +189,11 @@ class NMF:
                 for idx in range(len(W)):
                     W[idx, j] = max(0, delta[idx, 0])
 
+                # Rotate to lower dimension
                 WT[:, j] = Q.T * W[:, j]
 
-
-            if frobenius(self.X, W * H) <= 100:
+            # Check the distance between original matrix and W * H
+            if frobenius(self.X, W * H) <= error:
                 break
                 
         return (W, H)
