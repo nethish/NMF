@@ -3,6 +3,7 @@
 from math import copysign, hypot
 import numpy as np
 import pprint
+from matplotlib import pyplot as plt
 
 X = [[8, 9, 8, 8], 
     [6, 5, 6, 6], 
@@ -199,4 +200,29 @@ class NMF:
         return (W, H)
 
 nmf = NMF(X, 2)
-print(nmf.compute())
+W, H = nmf.compute()
+
+fig, axs = plt.subplots(3)
+axs[0].imshow(X)
+axs[1].imshow(W)
+axs[2].imshow(H)
+
+plt.show()
+
+# img = plt.imread('image.jpeg')
+# # plt.imshow(img)
+
+# def rgb2gray(rgb):
+#     return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
+
+# img = (rgb2gray(img))
+
+# for i in range(1, 20):
+#     nmf = NMF(img, i)
+#     for j in range(1, 10):
+#         for k in range(1, 10):
+#             try:
+#                 nmf.compute(j, k)
+#                 print("HIIIIIII")
+#             except:
+#                 pass
