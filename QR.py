@@ -39,23 +39,25 @@ def gramSchmidt(X):
     Returns Q and R matrix for given X using graph_schimidt process.
     But numerically unstable due to orthogonalization.
     """
-    rows, columns = np.shape(X)
+    # rows, columns = np.shape(X)
 
-    Q = np.empty([rows, rows])
-    count = 0
+    # Q = np.empty([rows, rows])
+    # count = 0
 
-    for a in X.T:
-        u = np.copy(a)
-        for i in range(0, count):
-            projection = np.dot(np.dot(Q[:, i].T, a), Q[:, i])
-            u -= projection
+    # for a in X.T:
+    #     u = np.copy(a)
+    #     for i in range(0, count):
+    #         projection = np.dot(np.dot(Q[:, i].T, a), Q[:, i])
+    #         u -= projection
 
-        e = u / np.linalg.norm(u)
-        Q[:, count] = e
-        count += 1
+    #     e = u / np.linalg.norm(u)
+    #     Q[:, count] = e
+    #     count += 1
 
-    R = np.dot(Q.T, X)
+    # R = np.dot(Q.T, X)
 
+    # return (Q, R)
+    Q, R = np.linalg.qr(X)
     return (Q, R)
 
 
@@ -120,7 +122,7 @@ def frobenius(X, Y):
     return np.linalg.norm(D, 'fro') 
 
 # Select algo for QR decompositions
-def QR(X, algo = 1):
+def QR(X, algo = 2):
     if algo == 2:
         return gramSchmidt(X)
     elif algo == 1:
@@ -209,20 +211,26 @@ axs[2].imshow(H)
 
 plt.show()
 
-# img = plt.imread('image.jpeg')
-# # plt.imshow(img)
+img = plt.imread('image.jpeg')
+plt.axis("off")
+plt.imshow(img)
+plt.show()
 
-# def rgb2gray(rgb):
-#     return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
+def rgb2gray(rgb):
+    return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
 
-# img = (rgb2gray(img))
+img = (rgb2gray(img))
 
-# for i in range(1, 20):
-#     nmf = NMF(img, i)
-#     for j in range(1, 10):
-#         for k in range(1, 10):
-#             try:
-#                 nmf.compute(j, k)
-#                 print("HIIIIIII")
-#             except:
-#                 pass
+for i in range(1, 20):
+    print(i)
+    nmf = NMF(img, i)
+    for j in range(1, 10):
+        for k in range(1, 10):
+            try:
+                nmf.compute(j, k)
+                print("HIIIIIII")
+            except:
+                print(j, k, 'not working')
+
+    print('try with 10 20')
+    nmf.compute(10, 20)
