@@ -8,9 +8,8 @@ from matplotlib import pyplot as plt
 X = [[8, 9, 8, 8], 
     [6, 5, 6, 6], 
     [6, 7, 6, 9], 
-    [6, 8, 7, 10], 
-    [6, 8, 5, 10]
-]
+    [6, 8, 7, 10]]#, 
+    # [6, 8, 5, 10]]
 
 """
 
@@ -148,13 +147,17 @@ class NMF:
         # Form basis of shape m x l
         Y = self.X * O
 
+        print(Y.shape)
+
         for i in range(q):
             Q, _ = QR(Y)
             Q, _ = QR(self.X.T * Q)
             Y = self.X * Q
 
         # Form orthogonal basis m x l
+        # print('x', self.X.shape)
         Q, _ = QR(Y)
+        # print('q', Q.shape)
         B = Q.T * self.X
 
         W, WT, H = np.random.rand(self.shape[0], self.rank), np.random.rand(l, self.rank), np.random.rand(self.rank, self.shape[1])
@@ -201,36 +204,45 @@ class NMF:
                 
         return (W, H)
 
-nmf = NMF(X, 2)
-W, H = nmf.compute()
+nmf = NMF(X, 3)
+W, H = nmf.compute(1)
+print(W, H, sep='\n')
 
 fig, axs = plt.subplots(3)
 axs[0].imshow(X)
+axs[0].axis("off")
 axs[1].imshow(W)
+axs[1].axis("off")
 axs[2].imshow(H)
+axs[2].axis("off")
 
 plt.show()
 
 img = plt.imread('image.jpeg')
-plt.axis("off")
-plt.imshow(img)
-plt.show()
+# plt.axis("off")
+# plt.imshow(img)
+# plt.show()
 
-def rgb2gray(rgb):
-    return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
+# def rgb2gray(rgb):
+#     return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
 
-img = (rgb2gray(img))
+# img = (rgb2gray(img))
+# print(img)
 
-for i in range(1, 20):
-    print(i)
-    nmf = NMF(img, i)
-    for j in range(1, 10):
-        for k in range(1, 10):
-            try:
-                nmf.compute(j, k)
-                print("HIIIIIII")
-            except:
-                print(j, k, 'not working')
+# for i in range(1, 20):
+#     print(i)
+#     nmf = NMF(img, i)
+#     for j in range(1, 10):
+#         for k in range(1, 10):
+#             nmf.compute(j, k)
+#             try:
+#                 nmf.compute(j, k)
+#                 print("HIIIIIII")
+#             except:
+#                 print(j, k, 'not working')
 
-    print('try with 10 20')
-    nmf.compute(10, 20)
+#     # try:
+#     print('try with 10 20')
+#     nmf.compute(10, 20)
+#     # except:
+#     #     print('not working', i)
