@@ -1,6 +1,6 @@
 # NMF
 NMF
 ```bash
-git clone 
+git clone https://github.com/nethish/NMF
 pip install -r requirements.txt
 ```
